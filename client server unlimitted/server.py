@@ -1,19 +1,25 @@
-from socket import *
-s = socket(AF_INET, SOCK_STREAM)
+import socket
 
-host = "127.0.0.1"
-port = 40674
+def start_server(host, port):
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket.bind((host, port))
+    server_socket.listen(1)
+    print(f"Server is listening on {host}:{port}")
 
-s.bind((host,port))
-print("socket binded to: ", port)
+    while True:
+        conn, addr = server_socket.accept()
+        print(f"Connection established from {addr}")
 
-s.listen(5)
-print("socket is listening")
+        while True:
+            data = conn.recv(1024)  # Receive data (up to 1024 bytes)
+            if not data:
+                break
+            print(f"Received data from client: {data.decode()}")
 
-while True:
-    c, addr = s.accept()
-    print("Get connection from ", addr)
+        conn.close()
 
-    c.send(b'thank you for connection')
+if __name__ == "__main__":
+    HOST = "127.0.0.1"  # localhost
+    PORT = 12345  # Arbitrary port number
 
-    c.close()
+    start_server(HOST, PORT)
